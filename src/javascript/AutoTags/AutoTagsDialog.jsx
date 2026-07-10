@@ -1,0 +1,149 @@
+import React, {useState} from 'react';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
+import {Button, Dropdown, Tag, Typography, Warning, Separator} from '@jahia/moonstone';
+import PropTypes from 'prop-types';
+import {useTranslation} from 'react-i18next';
+import styles from './AutoTagsDialog.scss';
+import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
+
+export const AutoTagsDialog = ({
+    availableLanguages,
+    isOpen,
+    onCloseDialog,
+    path,
+    langLocale,
+    formik
+}) => {
+    const {t} = useTranslation('automatic-content-tags');
+
+    const defaultOption = {
+        label: t('automatic-content-tags:label.dialog.defaultValue'),
+        value: 'void'
+    };
+
+    const [currentOption, setCurrentOption] = useState(defaultOption);
+    const [loadingQuery, setLoadingQuery] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    const handleCancel = () => {
+        onCloseDialog();
+    };
+
+    const handleOnChange = (e, item) => {
+        setCurrentOption(item);
+        return true;
+    };
+
+    const handleClick = async () => {
+        setLoadingQuery(true);
+        setErrorMessage(null);
+        try {
+            const formData = new FormData();
+            formData.append('tagLanguage', currentOption.label);
+
+            const contextPath = window.contextJsParameters?.contextPath || '';
+            const response = await fetch(`${contextPath}/cms/editframe/default/${langLocale}${path}.generateContentTagsAction.do`, {
+                method: 'POST',
+                headers: {Accept: 'application/json'},
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error, status: ${response.status}`);
+            }
+
+            const results = await response.json();
+            if (Array.isArray(results.tags) && results.tags.length > 0) {
+                await formik.setFieldValue('jmix:tagged', true);
+                await formik.setFieldValue('jmix:tagged_j:tagList', results.tags);
+                onCloseDialog();
+            } else {
+                setErrorMessage(t('automatic-content-tags:label.dialog.noTags'));
+            }
+        } catch (error) {
+            console.error('Error generating tags:', error);
+            setErrorMessage(t('automatic-content-tags:label.dialog.error'));
+        } finally {
+            setLoadingQuery(false);
+        }
+    };
+
+    const isApplyDisabled = defaultOption.value === currentOption.value || loadingQuery;
+
+    return (
+        <Dialog fullWidth
+                disableEnforceFocus
+                disableAutoFocus
+                disableRestoreFocus
+                aria-labelledby="dialog-autotags-title"
+                open={isOpen}
+                maxWidth="sm"
+                classes={{paper: styles.dialog_overflowYVisible}}
+                onClose={onCloseDialog}
+        >
+            <DialogTitle id="dialog-autotags-title" className={styles.dialogTitleContainer}>
+                <Tag size="big" className={styles.dialogLogo}/>
+                <Typography isUpperCase variant="heading" weight="bold" className={styles.dialogTitle}>
+                    {t('automatic-content-tags:label.dialog.dialogTitle')}
+                </Typography>
+                <div className={styles.dialogTitleTextContainer}>
+                    <Typography variant="subheading" className={styles.dialogSubTitle}>
+                        {t('automatic-content-tags:label.dialog.dialogSubTitle')}
+                    </Typography>
+                </div>
+            </DialogTitle>
+            <Separator className={styles.separator}/>
+            <DialogContent className={styles.dialogContent} classes={{root: styles.dialogContent_overflowYVisible}}>
+                <div className={styles.loaderOverlayWrapper}>
+                    <LoaderOverlay status={loadingQuery}/>
+                </div>
+                <Typography className={styles.copyFromLabel}>
+                    {t('automatic-content-tags:label.dialog.listLabel')}
+                </Typography>
+                <Dropdown
+                    className={styles.language}
+                    label={currentOption.label}
+                    value={currentOption.value}
+                    size="medium"
+                    isDisabled={false}
+                    maxWidth="120px"
+                    data={[defaultOption].concat(availableLanguages.map(element => {
+                        return {
+                            value: element.language,
+                            label: element.displayName
+                        };
+                    }))}
+                    onChange={handleOnChange}
+                />
+            </DialogContent>
+            <Separator className={styles.separator}/>
+            <DialogActions>
+                <Typography className={styles.warningText}>
+                    <Warning className={styles.warningIcon}/> {errorMessage || t('automatic-content-tags:label.dialog.bottomText')}
+                </Typography>
+                <Button
+                    size="big"
+                    color="default"
+                    label={t('automatic-content-tags:label.dialog.btnCancel')}
+                    onClick={handleCancel}
+                />
+                <Button
+                    size="big"
+                    color="accent"
+                    label={t('automatic-content-tags:label.dialog.btnApply')}
+                    disabled={isApplyDisabled}
+                    onClick={handleClick}
+                />
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+AutoTagsDialog.propTypes = {
+    availableLanguages: PropTypes.array,
+    isOpen: PropTypes.bool,
+    onCloseDialog: PropTypes.func,
+    path: PropTypes.string,
+    langLocale: PropTypes.string,
+    formik: PropTypes.object
+};

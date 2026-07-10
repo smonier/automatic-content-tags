@@ -1,0 +1,29 @@
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+/.settings/
+/.project
+
+# Node
+node_modules
+/node
+yarn-error.log
+.pnp.*
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Maven
+target
+pom.xml.releaseBackup
+release.properties
+
+# OS
+.DS_Store
