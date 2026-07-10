@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {AutoTagsDialog} from './AutoTagsDialog';
 import {ComponentRendererContext} from '@jahia/ui-extender';
+import {useNodeChecks} from '@jahia/data-helper';
 import {useFormikContext} from 'formik';
 import {useContentEditorContext} from '@jahia/jcontent';
 
@@ -9,6 +10,18 @@ export const AutoTagsActionComponent = ({render: Render, ...otherProps}) => {
     const {render, destroy} = useContext(ComponentRendererContext);
     const formik = useFormikContext();
     const {nodeData, lang, siteInfo} = useContentEditorContext();
+
+    const {checksResult} = useNodeChecks(
+        {path: nodeData.path},
+        {
+            showOnNodeTypes: ['jnt:content', 'jnt:page', 'jmix:mainResource'],
+            requireModuleInstalledOnSite: ['automatic-content-tags']
+        }
+    );
+
+    if (!checksResult) {
+        return null;
+    }
 
     return (
         <Render {...otherProps}
