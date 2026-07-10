@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
-import {Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
-import {Button, Dropdown, Tag, Typography, Warning, Separator} from '@jahia/moonstone';
+import {Dialog} from '@material-ui/core';
+import {Button, Dropdown, Loader, Tag, Typography, Warning, Separator} from '@jahia/moonstone';
 import PropTypes from 'prop-types';
 import {useTranslation} from 'react-i18next';
 import styles from './AutoTagsDialog.scss';
-import {LoaderOverlay} from '../DesignSystem/LoaderOverlay';
 
 export const AutoTagsDialog = ({
     availableLanguages,
@@ -81,28 +80,26 @@ export const AutoTagsDialog = ({
                 classes={{paper: styles.paper}}
                 onClose={onCloseDialog}
         >
-            <DialogTitle disableTypography id="dialog-autotags-title" className={styles.header}>
-                <span className={styles.iconBadge}>
+            <div className={styles.header} style={{display: 'flex', alignItems: 'center', gap: 16}}>
+                <span className={styles.iconBadge}
+                      style={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}
+                >
                     <Tag size="big"/>
                 </span>
-                <span className={styles.headerText}>
-                    <Typography isUpperCase variant="heading" weight="bold" className={styles.title}>
+                <span className={styles.headerText} style={{display: 'flex', flexDirection: 'column', minWidth: 0}}>
+                    <Typography isUpperCase id="dialog-autotags-title" variant="heading" weight="bold" className={styles.title}>
                         {t('automatic-content-tags:label.dialog.dialogTitle')}
                     </Typography>
                     <Typography variant="body" className={styles.subtitle}>
                         {t('automatic-content-tags:label.dialog.dialogSubTitle')}
                     </Typography>
                 </span>
-            </DialogTitle>
+            </div>
 
             <Separator className={styles.separator}/>
 
-            <DialogContent className={styles.content} classes={{root: styles.contentRoot}}>
-                <LoaderOverlay
-                    status={loadingQuery}
-                    caption={t('automatic-content-tags:label.dialog.generating')}
-                />
-                <label className={styles.field}>
+            <div className={styles.content}>
+                <label className={styles.field} style={{display: 'flex', flexDirection: 'column', gap: 8}}>
                     <Typography variant="subheading" weight="bold" className={styles.fieldLabel}>
                         {t('automatic-content-tags:label.dialog.listLabel')}
                     </Typography>
@@ -121,16 +118,28 @@ export const AutoTagsDialog = ({
                         onChange={handleOnChange}
                     />
                 </label>
-            </DialogContent>
+            </div>
 
             <Separator className={styles.separator}/>
 
-            <DialogActions className={styles.footer}>
-                <Typography className={`${styles.hint} ${errorMessage ? styles.hintError : ''}`}>
-                    <Warning className={`${styles.hintIcon} ${errorMessage ? styles.hintIconError : ''}`}/>
-                    {errorMessage || t('automatic-content-tags:label.dialog.bottomText')}
+            <div className={styles.footer} style={{display: 'flex', alignItems: 'center', gap: 16}}>
+                <Typography
+                    className={`${styles.hint} ${errorMessage ? styles.hintError : ''}`}
+                    style={{display: 'flex', alignItems: 'center', gap: 8, flexGrow: 1}}
+                >
+                    {loadingQuery ? (
+                        <>
+                            <Loader size="default"/>
+                            {t('automatic-content-tags:label.dialog.generating')}
+                        </>
+                    ) : (
+                        <>
+                            <Warning className={`${styles.hintIcon} ${errorMessage ? styles.hintIconError : ''}`}/>
+                            {errorMessage || t('automatic-content-tags:label.dialog.bottomText')}
+                        </>
+                    )}
                 </Typography>
-                <div className={styles.actions}>
+                <div className={styles.actions} style={{display: 'flex', gap: 8, flexShrink: 0}}>
                     <Button
                         size="big"
                         color="default"
@@ -145,7 +154,7 @@ export const AutoTagsDialog = ({
                         onClick={handleClick}
                     />
                 </div>
-            </DialogActions>
+            </div>
         </Dialog>
     );
 };

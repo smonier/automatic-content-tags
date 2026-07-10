@@ -2,33 +2,21 @@
     overflow-y: visible;
 }
 
-/* Header — icon badge aligned with title/subtitle stack */
+/* Header — icon badge aligned with title/subtitle stack (layout via inline flex) */
 .header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-medium);
     padding: var(--spacing-big) var(--spacing-big) var(--spacing-medium);
 }
 
 .iconBadge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
     width: 40px;
     height: 40px;
-
     border-radius: 8px;
     background-color: var(--color-accent_light);
     color: var(--color-accent_dark);
 }
 
 .headerText {
-    display: flex;
-    flex-direction: column;
     gap: var(--spacing-nano);
-    min-width: 0;
 }
 
 .title {
@@ -41,42 +29,19 @@
 
 /* Content */
 .content {
-    position: relative;
-    min-height: 96px;
-    padding: var(--spacing-big) !important;
-}
-
-.contentRoot {
-    overflow-y: visible;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-small);
-}
-
-.fieldLabel {
-    color: var(--color-text);
+    padding: var(--spacing-big);
 }
 
 .dropdown {
     max-width: 280px;
 }
 
-/* Footer — hint left, actions right */
+/* Footer — hint/loader left, actions right */
 .footer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-medium);
-    padding: var(--spacing-medium) var(--spacing-big) !important;
+    padding: var(--spacing-medium) var(--spacing-big);
 }
 
 .hint {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-small);
-    flex-grow: 1;
     color: var(--color-gray_dark);
 }
 
@@ -93,10 +58,8 @@
     color: var(--color-warning_dark);
 }
 
-.actions {
-    display: flex;
-    gap: var(--spacing-small);
-    flex-shrink: 0;
+.fieldLabel {
+    color: var(--color-text);
 }
 
 .separator {
