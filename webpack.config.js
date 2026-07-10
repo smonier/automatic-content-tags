@@ -47,9 +47,12 @@ module.exports = (env, argv) => {
                     use: [
                         'style-loader',
                         {
-                            loader:'css-loader',
+                            loader: 'css-loader',
                             options: {
-                                modules: true
+                                modules: {
+                                    namedExport: false,
+                                    exportLocalsConvention: 'as-is'
+                                }
                             }
                         },
                         'sass-loader'
